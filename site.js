@@ -7,12 +7,13 @@ if (root.classList.contains("booting")) {
   const options = { signal: listeners.signal };
   const splashTitle = boot.querySelector(".boot-word");
   const word = splashTitle.textContent;
+  splashTitle.dataset.word = word;
   splashTitle.textContent = "";
-  // Keep the app's startup beat and reveal the page once after the letter flicker.
+  // Keep the app's startup beat with one distortion before the page reveal.
   const frame = 1000 / 24;
   const wordAt = 1000;
-  const flickerAt = 2300;
-  const doneAt = flickerAt + 9 * frame;
+  const doneAt = 2675;
+  const glitchAt = doneAt - 4 * frame;
   const revealOrder = "31704625";
   const started = performance.now();
   let queuedFrame;
@@ -38,14 +39,13 @@ if (root.classList.contains("booting")) {
     }
 
     let title = "";
-    if (elapsed >= flickerAt && elapsed < flickerAt + 2 * frame) {
-      title = partialWord("67314052", word.length - 3);
-    } else if (elapsed >= wordAt) {
+    if (elapsed >= wordAt) {
       const shown = Math.floor((elapsed - wordAt) / (frame * 1.1)) + 1;
       title = shown < word.length ? partialWord(revealOrder, shown) : word;
     }
 
     if (splashTitle.textContent !== title) splashTitle.textContent = title;
+    splashTitle.classList.toggle("glitch", elapsed >= glitchAt && elapsed < doneAt - frame);
     queuedFrame = requestAnimationFrame(playStartup);
   }
 

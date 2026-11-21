@@ -339,6 +339,23 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
   transform: translate(-50%, -50%);
   font: 700 min(17vw, clamp(42px, 7svh, 92.4px))/1 var(--display);
 }
+.boot-word.glitch::before,
+.boot-word.glitch::after {
+  position: absolute;
+  inset: 0 -12px;
+  background: var(--base);
+  text-align: center;
+  content: attr(data-word);
+}
+.boot-word.glitch::before {
+  padding-inline-start: .18em;
+  clip-path: inset(0 0 58%);
+  text-shadow: -.035em 0 var(--accent);
+}
+.boot-word.glitch::after {
+  padding-inline-end: .12em;
+  clip-path: inset(69% 0 0);
+}
 .booting .hero-content, .booting .masthead .bar, .booting .motion-toggle { opacity: 0; }
 .intro-landed .hero-details > * { animation: intro-slide 333ms var(--settle) both; }
 .intro-landed .hero-details > .description { animation-delay: 29ms; }
