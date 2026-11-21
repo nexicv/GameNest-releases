@@ -327,43 +327,23 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
 .footer-community img { width: auto; height: 56px; }
 .footer-community .button { gap: 8px; }
 
-#boot { display: none; }
-.booting #boot { position: fixed; z-index: 10; inset: 0; display: block; overflow: hidden; }
-.boot-surface { position: absolute; inset: 0; overflow: hidden; background: var(--base); }
-.boot-word {
-  position: absolute;
-  top: calc(50% + clamp(20px, 3.333svh, 44px));
-  left: 50%;
-  width: max-content;
-  white-space: pre;
-  transform: translate(-50%, -50%);
-  font: 700 min(17vw, clamp(42px, 7svh, 92.4px))/1 var(--display);
+.boot-defs { position: absolute; pointer-events: none; }
+#boot, .boot-word { display: none; }
+.booting #boot { position: fixed; z-index: 10; inset: 0; display: grid; place-items: center; }
+.booting.boot-away #boot {
+  background: var(--deep);
+  opacity: calc(1 - var(--boot-ui-opacity, 0));
 }
-.boot-word.glitch::before,
-.boot-word.glitch::after {
-  position: absolute;
-  inset: 0 -12px;
-  background: var(--base);
+.booting.boot-away .boot-word {
+  display: block;
+  width: min(calc(100% - 40px), 68rem);
   text-align: center;
-  content: attr(data-word);
 }
-.boot-word.glitch::before {
-  padding-inline-start: .18em;
-  clip-path: inset(0 0 58%);
-  text-shadow: -.035em 0 var(--accent);
-}
-.boot-word.glitch::after {
-  padding-inline-end: .12em;
-  clip-path: inset(69% 0 0);
-}
-.booting .hero-content, .booting .masthead .bar, .booting .motion-toggle { opacity: 0; }
-.intro-landed .hero-details > * { animation: intro-slide 333ms var(--settle) both; }
-.intro-landed .hero-details > .description { animation-delay: 29ms; }
-.intro-landed .hero-details > .actions { animation-delay: 58ms; }
-@keyframes intro-slide {
-  from { transform: translateX(-120px); }
-  to { transform: translateX(0); }
-}
+.boot-letter-build :is(#title, .boot-word) { mask: url("#boot-word-mask"); }
+.booting .hero-field { opacity: var(--boot-art-opacity, 0); }
+.booting .field-left { mask: url("#boot-left-mask"); }
+.booting .field-right { mask: url("#boot-right-mask"); }
+.booting :is(.masthead, .hero-details) { opacity: var(--boot-ui-opacity, 0); }
 .arrived { animation: assemble 400ms var(--entry-delay, 0ms) var(--settle) backwards; }
 .game:nth-child(2), .steps li:nth-child(2) { --entry-delay: 55ms; }
 .game:nth-child(3), .steps li:nth-child(3) { --entry-delay: 110ms; }
@@ -413,7 +393,8 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .booting #boot, .motion-toggle { display: none; }
-  .booting .hero-content, .booting .masthead .bar { opacity: 1; }
+  .booting :is(.masthead, .hero-details, .hero-field) { opacity: 1; }
+  .booting :is(#title, .field-left, .field-right) { mask: none; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 

@@ -1,63 +1,161 @@
 const root = document.documentElement;
 const motion = matchMedia("(prefers-reduced-motion: reduce)");
-const boot = document.querySelector("#boot");
 
 if (root.classList.contains("booting")) {
   const listeners = new AbortController();
   const options = { signal: listeners.signal };
-  const splashTitle = boot.querySelector(".boot-word");
-  const word = splashTitle.textContent;
-  splashTitle.dataset.word = word;
-  splashTitle.textContent = "";
-  // Keep the app's startup beat with one distortion before the page reveal.
-  const frame = 1000 / 24;
-  const wordAt = 1000;
-  const doneAt = 2675;
-  const glitchAt = doneAt - 4 * frame;
-  const revealOrder = "31704625";
-  const started = performance.now();
+  const boot = document.querySelector("#boot");
+  const title = document.querySelector("#title");
+  const fallback = boot.querySelector(".boot-word");
+  const litMask = document.querySelector("#boot-lit");
+  const dimMask = document.querySelector("#boot-dim");
+  const letterCuts = document.querySelector("#boot-cuts");
+  const artwork = ["left", "right"].map(side => ({
+    base: document.querySelector(`#boot-${side}-base`),
+    cuts: document.querySelector(`#boot-${side}-cuts`),
+  }));
+  const beat = 1 / 24;
+  const wordAt = .24;
+  const wordStableAt = wordAt + 12 * beat;
+  const uiAt = wordStableAt + beat + .025;
+  const finishAt = uiAt + .19;
+  // Each letter lights up on entry, then dims on these offsets without pausing the next letter.
+  const schedule = [
+    [3, [2, 5]], [1, [2]], [7, [2, 6]], [0, [2, 4]],
+    [4, [2]], [6, [2, 5]], [2, [2]], [5, [2, 4]],
+  ];
+  const origins = [
+    [.59, .59], [.52, .10], [.50, .42], [.16, .48],
+    [.19, .83], [.82, .17], [.54, .52], [.64, .15],
+  ];
+  const exact = value => Number(value.toFixed(5));
+  const block = (x, y, width, height) =>
+    `M${exact(x)} ${exact(y)}h${exact(width)}v${exact(height)}h${exact(-width)}z`;
+  let started;
   let queuedFrame;
+  let lastBeat;
+  let bounds;
 
-  function finishIntro(landed) {
-    root.classList.toggle("intro-landed", landed);
-    root.classList.remove("booting");
+  function finishIntro() {
+    clearTimeout(fontWait);
+    root.classList.remove("booting", "boot-letter-build", "boot-away");
+    root.style.removeProperty("--boot-art-opacity");
+    root.style.removeProperty("--boot-ui-opacity");
     cancelAnimationFrame(queuedFrame);
     listeners.abort();
     syncBackgroundMotion();
   }
 
-  function partialWord(order, count) {
-    const visible = order.slice(0, count);
-    return [...word].map((letter, index) => visible.includes(String(index)) ? letter : " ").join("");
+  function trackViewport() {
+    // A fixed wordmark preserves the intro on section links and restored scroll positions.
+    const rect = title.getBoundingClientRect();
+    root.classList.toggle("boot-away", rect.top < 0 || rect.bottom > innerHeight);
+    bounds = undefined;
+  }
+
+  function getLetterBounds() {
+    const word = root.classList.contains("boot-away") ? fallback : title;
+    const wordBox = word.getBoundingClientRect();
+    return Array.from(word.textContent, (_, index) => {
+      const range = document.createRange();
+      range.setStart(word.firstChild, index);
+      range.setEnd(word.firstChild, index + 1);
+      const box = range.getBoundingClientRect();
+      return { x: (box.left - wordBox.left) / wordBox.width, width: box.width / wordBox.width };
+    });
+  }
+
+  function noise(seed) {
+    const bits = Math.imul(seed + 41, 1597334677);
+    return ((bits ^ (bits >>> 13)) >>> 0) / 4294967296;
+  }
+
+  function cutStamp(box, origin, seed, amount, count) {
+    return Array.from({ length: count }, (_, i) => {
+      const id = seed + i * 7;
+      const u = Math.max(0, Math.min(.96, origin[0] + (noise(id) - .5) * amount));
+      const v = Math.max(0, Math.min(.94, origin[1] + (noise(id + 1) - .5) * amount * .75));
+      const width = Math.min(1 - u, (.042 + noise(id + 2) * .18) * amount);
+      const height = Math.min(1 - v, .012 + noise(id + 3) * .036);
+      return block(box.x + box.width * u, v, box.width * width, height);
+    }).join("");
+  }
+
+  function paintBeat(index) {
+    const lit = [];
+    const dim = [];
+    const cuts = [];
+    const artCuts = ["", ""];
+    for (const [start, [letter, beats]] of schedule.entries()) {
+      const age = index - start;
+      if (age < 0) continue;
+      const box = bounds[letter];
+      const outline = block(box.x, 0, box.width, 1);
+      if (!beats.includes(age)) {
+        lit.push(outline);
+        continue;
+      }
+      dim.push(outline);
+      cuts.push(cutStamp(box, origins[letter], letter * 191 + age * 23, .58, 14));
+      const side = letter < 4 ? 0 : 1;
+      const [u, v] = origins[letter];
+      artCuts[side] += cutStamp({ x: 0, width: 1 }, [.32 + u * .36, .26 + v * .48], letter * 109 + age * 13, .66, 12);
+    }
+    litMask.setAttribute("d", lit.join(""));
+    dimMask.setAttribute("d", dim.join(""));
+    letterCuts.setAttribute("d", cuts.join(""));
+    artwork.forEach((tile, side) => tile.cuts.setAttribute("d", artCuts[side]));
+  }
+
+  function easeBetween(t, start, end) {
+    const value = Math.min(1, Math.max(0, (t - start) / (end - start)));
+    return value * value * (3 - 2 * value);
   }
 
   function playStartup(now) {
-    const elapsed = now - started;
-    if (elapsed >= doneAt) {
-      finishIntro(true);
+    const elapsed = (now - started) / 1000;
+    if (elapsed >= finishAt) {
+      finishIntro();
       return;
     }
-
-    let title = "";
-    if (elapsed >= wordAt) {
-      const shown = Math.floor((elapsed - wordAt) / (frame * 1.1)) + 1;
-      title = shown < word.length ? partialWord(revealOrder, shown) : word;
+    root.classList.toggle("boot-letter-build", elapsed < wordStableAt);
+    const index = Math.floor((elapsed - wordAt) / beat + 1e-7);
+    if (index !== lastBeat || !bounds) {
+      bounds ??= getLetterBounds();
+      paintBeat(index);
+      lastBeat = index;
     }
-
-    if (splashTitle.textContent !== title) splashTitle.textContent = title;
-    splashTitle.classList.toggle("glitch", elapsed >= glitchAt && elapsed < doneAt - frame);
+    const art = easeBetween(elapsed, wordAt + 2 * beat, finishAt);
+    root.style.setProperty("--boot-art-opacity", exact(art));
+    root.style.setProperty("--boot-ui-opacity", exact(easeBetween(elapsed, uiAt, finishAt)));
+    artwork.forEach(tile => tile.base.setAttribute("opacity", exact(.64 + art * .36)));
     queuedFrame = requestAnimationFrame(playStartup);
   }
 
-  boot.addEventListener("click", () => finishIntro(false), options);
-  document.addEventListener("keydown", () => finishIntro(false), options);
+  boot.addEventListener("click", finishIntro, options);
+  document.addEventListener("keydown", finishIntro, options);
   for (const event of ["wheel", "touchmove"]) {
-    window.addEventListener(event, () => finishIntro(false), { ...options, passive: true });
+    window.addEventListener(event, finishIntro, { ...options, passive: true });
+  }
+  for (const event of ["resize", "scroll"]) {
+    window.addEventListener(event, trackViewport, { ...options, passive: true });
   }
   motion.addEventListener("change", () => {
-    if (motion.matches) finishIntro(false);
+    if (motion.matches) finishIntro();
   }, options);
-  queuedFrame = requestAnimationFrame(playStartup);
+  trackViewport();
+  const fontWait = setTimeout(finishIntro, 750);
+  document.fonts.ready.then(() => {
+    if (options.signal.aborted) return;
+    clearTimeout(fontWait);
+    if (motion.matches) {
+      finishIntro();
+      return;
+    }
+    trackViewport();
+    started = performance.now();
+    queuedFrame = requestAnimationFrame(playStartup);
+  });
 }
 
 const field = document.querySelector(".hero-field");

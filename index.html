@@ -21,20 +21,38 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/gamenest-gn.svg" type="image/svg+xml">
   <link rel="preload" href="assets/ChakraPetch-Bold.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="site.css?v=letter-flicker">
   <script>
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      document.documentElement.classList.add("booting");
+      document.documentElement.classList.add("booting", "boot-letter-build");
+      if (location.hash && location.hash !== "#top") {
+        document.documentElement.classList.add("boot-away");
+      }
     }
   </script>
-  <script src="site.js" defer></script>
+  <script src="site.js?v=letter-flicker" defer></script>
 </head>
 <body>
   <a class="skip" href="#games">Skip to games</a>
+  <svg class="boot-defs" width="0" height="0" aria-hidden="true">
+    <defs>
+      <mask id="boot-word-mask" width="1" height="1" x="0" y="0" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
+        <path id="boot-lit" fill="white"></path>
+        <path id="boot-dim" fill="#777"></path>
+        <path id="boot-cuts" fill="black" opacity=".86"></path>
+      </mask>
+      <mask id="boot-left-mask" width="1" height="1" x="0" y="0" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
+        <rect id="boot-left-base" width="1" height="1" fill="white" opacity=".64"></rect>
+        <path id="boot-left-cuts" fill="black" opacity=".9"></path>
+      </mask>
+      <mask id="boot-right-mask" width="1" height="1" x="0" y="0" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
+        <rect id="boot-right-base" width="1" height="1" fill="white" opacity=".64"></rect>
+        <path id="boot-right-cuts" fill="black" opacity=".9"></path>
+      </mask>
+    </defs>
+  </svg>
   <div id="boot" aria-hidden="true">
-    <div class="boot-surface">
-      <strong class="boot-word">GAMENEST</strong>
-    </div>
+    <strong class="wordmark boot-word">GAMENEST</strong>
   </div>
   <header class="masthead">
     <div class="bar">
