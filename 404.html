@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f1a">
+  <meta name="robots" content="noindex">
+  <title>Page not found | GameNest</title>
+  <base href="/">
+  <script>
+    const base = document.querySelector("base");
+    if (location.hostname === "nexicv.github.io") base.href = "/gamenest-site/";
+    if (location.protocol === "file:") base.href = "./";
+  </script>
+  <link rel="icon" href="assets/gamenest-gn.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body class="error-page">
+  <header class="masthead">
+    <div class="frame error-bar">
+      <a class="brand" href="index.html" aria-label="GameNest home">
+        <img src="assets/gamenest-gn.svg" alt="" width="159" height="116">GAMENEST
+      </a>
+    </div>
+  </header>
+  <main class="frame not-found">
+    <p class="error-code">404</p>
+    <h1>Page not found</h1>
+    <p class="description">The page may have moved, or the link may be out of date.</p>
+    <div class="actions">
+      <a class="button primary" href="index.html">Back to home</a>
+      <a class="button secondary" href="index.html#downloads">Downloads</a>
+    </div>
+  </main>
+</body>
+</html>
