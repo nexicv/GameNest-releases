@@ -232,6 +232,7 @@ img { display: block; max-width: 100%; height: auto; }
 .play-layout { grid-template-columns: minmax(0, .85fr) minmax(0, 1.3fr); align-items: center; }
 .play-reference { min-width: 0; display: grid; gap: 16px; }
 .lobby-figure { margin: 0; border: 1px solid var(--line); background: var(--surface); }
+.lobby-image-wrap { position: relative; }
 .lobby-image { display: block; position: relative; cursor: zoom-in; }
 .lobby-image:focus-visible { outline-offset: -4px; }
 .lobby-enlarge {
@@ -244,10 +245,12 @@ img { display: block; max-width: 100%; height: auto; }
   background: var(--deep);
   font: .6875rem/1.3 var(--mono);
 }
+.lobby-enlarge::after { content: " ↗"; }
 .lobby-image:hover .lobby-enlarge, .lobby-image:focus-visible .lobby-enlarge { border-color: var(--accent); }
 .lobby-image img { width: 100%; height: auto; }
 .lobby-pin {
   position: absolute;
+  pointer-events: none;
   display: grid;
   width: clamp(16px, 3vw, 26px);
   aspect-ratio: 1;
@@ -336,22 +339,7 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
   transform: translate(-50%, -50%);
   font: 700 min(17vw, clamp(42px, 7svh, 92.4px))/1 var(--display);
 }
-#boot:not([data-phase]) .boot-word { visibility: hidden; }
-#boot[data-phase="jitter"] .boot-word { margin-left: clamp(10px, 1.667svh, 22px); }
-#boot:is([data-phase="landing"], [data-phase="scan"]) .boot-surface { visibility: hidden; }
-#boot[data-phase="scan"]::after {
-  position: absolute;
-  inset: 0 auto 0 30%;
-  width: 5px;
-  background: #1f6feb;
-  content: "";
-}
-#boot[data-phase="shrink-middle"] .boot-word { top: 32%; font-size: min(17vw, clamp(34px, 5.667svh, 74.8px)); }
-#boot[data-phase="shrink-top"] .boot-word { top: 14%; font-size: min(17vw, clamp(26px, 4.333svh, 57.2px)); }
 .booting .hero-content, .booting .masthead .bar, .booting .motion-toggle { opacity: 0; }
-.booting:has(#boot:is([data-phase="landing"], [data-phase="scan"])) :is(.hero-content, .masthead .bar, .motion-toggle) {
-  opacity: 1;
-}
 .intro-landed .hero-details > * { animation: intro-slide 333ms var(--settle) both; }
 .intro-landed .hero-details > .description { animation-delay: 29ms; }
 .intro-landed .hero-details > .actions { animation-delay: 58ms; }
@@ -456,3 +444,9 @@ html:has(.game-preview[open]) { overflow: hidden; }
 }
 .error-code { margin-bottom: 12px; color: var(--accent); font: .875rem/1.4 var(--mono); letter-spacing: .12em; }
 .not-found h1 { font-size: clamp(2.5rem, 8vw, 5rem); }
+
+.privacy-page { max-width: 720px; }
+.privacy-page h1 { font-size: clamp(2.5rem, 7vw, 4rem); }
+.privacy-page h2 { margin-top: 28px; font-size: 1.5rem; }
+.privacy-page p { margin-top: 10px; color: var(--secondary); }
+.privacy-page .actions { justify-content: flex-start; }

@@ -8,16 +8,12 @@ if (root.classList.contains("booting")) {
   const splashTitle = boot.querySelector(".boot-word");
   const word = splashTitle.textContent;
   splashTitle.textContent = "";
-  // GameNest v0.11.11 uses a 24 Hz beat inside its continuously rendered intro.
+  // Keep the app's startup beat and reveal the page once after the letter flicker.
   const frame = 1000 / 24;
   const wordAt = 1000;
   const flickerAt = 2300;
-  const jitterAt = flickerAt - 80;
-  const shrinkAt = flickerAt + 6 * frame;
-  const doneAt = shrinkAt + 3 * frame;
+  const doneAt = flickerAt + 9 * frame;
   const revealOrder = "31704625";
-  // Native letter_order seeds 55 through 61, used only during the handoff flicker.
-  const flickerOrders = ["67314052", "26430571", "37016452", "24507136", "36140275", "35264017", "07653241"];
   const started = performance.now();
   let queuedFrame;
 
@@ -41,28 +37,14 @@ if (root.classList.contains("booting")) {
       return;
     }
 
-    let phase = "build";
     let title = "";
-    if (elapsed >= shrinkAt) {
-      const step = Math.floor((elapsed - shrinkAt) / frame);
-      phase = ["shrink-middle", "shrink-top", "clear"][step];
-      if (step < 2) title = word;
-    } else if (elapsed >= flickerAt) {
-      const beat = Math.floor((elapsed - flickerAt) / frame);
-      if (beat % 2 === 1) {
-        phase = beat === 3 ? "scan" : "landing";
-      } else {
-        const order = flickerOrders[Math.floor(elapsed / frame) - 55];
-        const drop = 2 + Math.floor(elapsed * .097) % 3;
-        title = partialWord(order, word.length - drop);
-      }
+    if (elapsed >= flickerAt && elapsed < flickerAt + 2 * frame) {
+      title = partialWord("67314052", word.length - 3);
     } else if (elapsed >= wordAt) {
       const shown = Math.floor((elapsed - wordAt) / (frame * 1.1)) + 1;
-      title = partialWord(revealOrder, shown);
-      if (elapsed >= jitterAt && elapsed < jitterAt + frame) phase = "jitter";
+      title = shown < word.length ? partialWord(revealOrder, shown) : word;
     }
 
-    if (boot.dataset.phase !== phase) boot.dataset.phase = phase;
     if (splashTitle.textContent !== title) splashTitle.textContent = title;
     queuedFrame = requestAnimationFrame(playStartup);
   }
