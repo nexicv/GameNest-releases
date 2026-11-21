@@ -224,11 +224,11 @@
           </details>
           <details>
             <summary>Should we use a join code or a LAN/Tailscale address?</summary>
-            <p>Use a join code when players are not on the same network and you do not want port forwarding or Tailscale. Tick <strong>Host through relay</strong> before hosting, then share the six-character code. Players do not see each other's IP addresses when they join this way, but the relay still receives their connections, and the extra hop through Milan adds latency. Use LAN or Tailscale when everyone is on one network or tailnet, and join with the host's address and port 47631. Joining by IP still works while relay hosting is on, and Practice Range multiplayer still uses a LAN or Tailscale connection.</p>
+            <p>Use a join code when players are not on the same network and you do not want port forwarding or Tailscale. Tick <strong>Host through relay</strong> before hosting, then share the six-character code. Players do not see each other's IP addresses when they join this way, but the relay still receives their connections, and the extra hop through Milan adds latency. Use LAN or Tailscale when everyone is on one network or tailnet, and join with the host's address and port 47631. Joining by IP still works while relay hosting is on. Some games might need Tailscale or a local LAN to work effectively; joining by code is viable but less preferred.</p>
           </details>
           <details>
             <summary>What does a guest need installed?</summary>
-            <p>Only GameNest. Guests do not need game packs, source code, or a compiler. The host installs the games from <strong>Settings → Manage games</strong>, runs the rules, and sends each player their screen. Practice Range is the exception: every player installs a copy.</p>
+            <p>Only GameNest. Guests do not need game packs, source code, or a compiler. The host installs the games from <strong>Settings → Manage games</strong>, runs the rules, and sends each player their screen. Some games might need installing.</p>
           </details>
           <details>
             <summary>How do I add or update games?</summary>
@@ -237,7 +237,7 @@
           </details>
           <details>
             <summary>Why can't my friend connect?</summary>
-            <p>Check that the guest typed the host's address and port, or the six-character join code, into <strong>Host IP or code</strong>. GameNest does not change firewall or Tailscale settings, so remote players may need those set up, and a test on the same network does not prove a remote friend can connect. If the relay cannot be reached, the lobby says so and joining by IP still works. A phone host must keep GameNest in front, because Android may stop the app when you switch away.</p>
+            <p>Check that the guest typed the host's address and port, or the six-character join code, into <strong>Host IP or code</strong>. Each new build may trigger a network access prompt; accept it, and check firewall or Tailscale settings if a remote friend still cannot connect. A test on the same network does not prove a remote friend can connect. If the relay cannot be reached, the lobby says so and joining by IP still works. A phone host must keep GameNest in front, because Android may stop the app when you switch away.</p>
           </details>
           <details>
             <summary>Can we continue after a disconnect?</summary>
