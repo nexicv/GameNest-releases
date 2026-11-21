@@ -12,7 +12,7 @@ if (root.classList.contains("booting")) {
   const beat = 1 / 24;
   const wordAt = .24;
   const wordStableAt = wordAt + 12 * beat;
-  const revealAt = wordStableAt + .025;
+  const revealAt = wordStableAt + .25;
   const navEnd = revealAt + .24;
   const detailsAt = revealAt + .055;
   const finishAt = detailsAt + .23;
