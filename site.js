@@ -9,28 +9,19 @@ if (root.classList.contains("booting")) {
   const fallback = boot.querySelector(".boot-word");
   const litMask = document.querySelector("#boot-lit");
   const dimMask = document.querySelector("#boot-dim");
-  const letterCuts = document.querySelector("#boot-cuts");
-  const artwork = ["left", "right"].map(side => ({
-    base: document.querySelector(`#boot-${side}-base`),
-    cuts: document.querySelector(`#boot-${side}-cuts`),
-  }));
   const beat = 1 / 24;
   const wordAt = .24;
   const wordStableAt = wordAt + 12 * beat;
-  const uiAt = wordStableAt + beat + .025;
-  const finishAt = uiAt + .19;
+  const revealAt = wordStableAt + .025;
+  const navEnd = revealAt + .24;
+  const detailsAt = revealAt + .055;
+  const finishAt = detailsAt + .23;
   // Each letter lights up on entry, then dims on these offsets without pausing the next letter.
   const schedule = [
     [3, [2, 5]], [1, [2]], [7, [2, 6]], [0, [2, 4]],
     [4, [2]], [6, [2, 5]], [2, [2]], [5, [2, 4]],
   ];
-  const origins = [
-    [.59, .59], [.52, .10], [.50, .42], [.16, .48],
-    [.19, .83], [.82, .17], [.54, .52], [.64, .15],
-  ];
   const exact = value => Number(value.toFixed(5));
-  const block = (x, y, width, height) =>
-    `M${exact(x)} ${exact(y)}h${exact(width)}v${exact(height)}h${exact(-width)}z`;
   let started;
   let queuedFrame;
   let lastBeat;
@@ -40,7 +31,8 @@ if (root.classList.contains("booting")) {
     clearTimeout(fontWait);
     root.classList.remove("booting", "boot-letter-build", "boot-away");
     root.style.removeProperty("--boot-art-opacity");
-    root.style.removeProperty("--boot-ui-opacity");
+    root.style.removeProperty("--boot-nav-progress");
+    root.style.removeProperty("--boot-details-progress");
     cancelAnimationFrame(queuedFrame);
     listeners.abort();
     syncBackgroundMotion();
@@ -65,46 +57,18 @@ if (root.classList.contains("booting")) {
     });
   }
 
-  function noise(seed) {
-    const bits = Math.imul(seed + 41, 1597334677);
-    return ((bits ^ (bits >>> 13)) >>> 0) / 4294967296;
-  }
-
-  function cutStamp(box, origin, seed, amount, count) {
-    return Array.from({ length: count }, (_, i) => {
-      const id = seed + i * 7;
-      const u = Math.max(0, Math.min(.96, origin[0] + (noise(id) - .5) * amount));
-      const v = Math.max(0, Math.min(.94, origin[1] + (noise(id + 1) - .5) * amount * .75));
-      const width = Math.min(1 - u, (.042 + noise(id + 2) * .18) * amount);
-      const height = Math.min(1 - v, .012 + noise(id + 3) * .036);
-      return block(box.x + box.width * u, v, box.width * width, height);
-    }).join("");
-  }
-
   function paintBeat(index) {
     const lit = [];
     const dim = [];
-    const cuts = [];
-    const artCuts = ["", ""];
     for (const [start, [letter, beats]] of schedule.entries()) {
       const age = index - start;
       if (age < 0) continue;
-      const box = bounds[letter];
-      const outline = block(box.x, 0, box.width, 1);
-      if (!beats.includes(age)) {
-        lit.push(outline);
-        continue;
-      }
-      dim.push(outline);
-      cuts.push(cutStamp(box, origins[letter], letter * 191 + age * 23, .58, 14));
-      const side = letter < 4 ? 0 : 1;
-      const [u, v] = origins[letter];
-      artCuts[side] += cutStamp({ x: 0, width: 1 }, [.32 + u * .36, .26 + v * .48], letter * 109 + age * 13, .66, 12);
+      const { x, width } = bounds[letter];
+      const outline = `M${exact(x)} 0h${exact(width)}v1h${exact(-width)}z`;
+      (beats.includes(age) ? dim : lit).push(outline);
     }
     litMask.setAttribute("d", lit.join(""));
     dimMask.setAttribute("d", dim.join(""));
-    letterCuts.setAttribute("d", cuts.join(""));
-    artwork.forEach((tile, side) => tile.cuts.setAttribute("d", artCuts[side]));
   }
 
   function easeBetween(t, start, end) {
@@ -125,10 +89,9 @@ if (root.classList.contains("booting")) {
       paintBeat(index);
       lastBeat = index;
     }
-    const art = easeBetween(elapsed, wordAt + 2 * beat, finishAt);
-    root.style.setProperty("--boot-art-opacity", exact(art));
-    root.style.setProperty("--boot-ui-opacity", exact(easeBetween(elapsed, uiAt, finishAt)));
-    artwork.forEach(tile => tile.base.setAttribute("opacity", exact(.64 + art * .36)));
+    root.style.setProperty("--boot-art-opacity", exact(easeBetween(elapsed, revealAt, finishAt)));
+    root.style.setProperty("--boot-nav-progress", exact(easeBetween(elapsed, revealAt, navEnd)));
+    root.style.setProperty("--boot-details-progress", exact(easeBetween(elapsed, detailsAt, finishAt)));
     queuedFrame = requestAnimationFrame(playStartup);
   }
 

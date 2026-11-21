@@ -332,7 +332,7 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
 .booting #boot { position: fixed; z-index: 10; inset: 0; display: grid; place-items: center; }
 .booting.boot-away #boot {
   background: var(--deep);
-  opacity: calc(1 - var(--boot-ui-opacity, 0));
+  opacity: calc(1 - var(--boot-details-progress, 0));
 }
 .booting.boot-away .boot-word {
   display: block;
@@ -341,9 +341,14 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
 }
 .boot-letter-build :is(#title, .boot-word) { mask: url("#boot-word-mask"); }
 .booting .hero-field { opacity: var(--boot-art-opacity, 0); }
-.booting .field-left { mask: url("#boot-left-mask"); }
-.booting .field-right { mask: url("#boot-right-mask"); }
-.booting :is(.masthead, .hero-details) { opacity: var(--boot-ui-opacity, 0); }
+.booting .masthead {
+  opacity: var(--boot-nav-progress, 0);
+  translate: 0 calc(-100% * (1 - var(--boot-nav-progress, 0)));
+}
+.booting .hero-details {
+  opacity: var(--boot-details-progress, 0);
+  translate: 0 calc(14px * (1 - var(--boot-details-progress, 0)));
+}
 .arrived { animation: assemble 400ms var(--entry-delay, 0ms) var(--settle) backwards; }
 .game:nth-child(2), .steps li:nth-child(2) { --entry-delay: 55ms; }
 .game:nth-child(3), .steps li:nth-child(3) { --entry-delay: 110ms; }
@@ -394,7 +399,8 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
 @media (prefers-reduced-motion: reduce) {
   .booting #boot, .motion-toggle { display: none; }
   .booting :is(.masthead, .hero-details, .hero-field) { opacity: 1; }
-  .booting :is(#title, .field-left, .field-right) { mask: none; }
+  .booting :is(.masthead, .hero-details) { translate: none; }
+  .booting #title { mask: none; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
