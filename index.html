@@ -224,7 +224,7 @@
           </details>
           <details>
             <summary>Should we use a join code or a LAN/Tailscale address?</summary>
-            <p>Use a join code when players are not on the same network and you do not want port forwarding or Tailscale. Tick <strong>Host through relay</strong> before hosting, then share the six-character code; it hides both IPs, but the traffic goes through the relay in Milan and adds latency. Use LAN or Tailscale when everyone is on one network or tailnet, and join with the host's address and port 47631. Joining by IP still works while relay hosting is on, and Practice Range multiplayer still uses a LAN or Tailscale connection.</p>
+            <p>Use a join code when players are not on the same network and you do not want port forwarding or Tailscale. Tick <strong>Host through relay</strong> before hosting, then share the six-character code. Players do not see each other's IP addresses when they join this way, but the relay still receives their connections, and the extra hop through Milan adds latency. Use LAN or Tailscale when everyone is on one network or tailnet, and join with the host's address and port 47631. Joining by IP still works while relay hosting is on, and Practice Range multiplayer still uses a LAN or Tailscale connection.</p>
           </details>
           <details>
             <summary>What does a guest need installed?</summary>
@@ -245,7 +245,7 @@
           </details>
           <details>
             <summary>What happens if our versions differ?</summary>
-            <p>Different platforms ship different versions, so an older guest can meet a newer host. On Windows, an older guest that supports the updater is offered <strong>Update &amp; restart</strong> or <strong>Later</strong>; accepting checks the version, size, and SHA-256, restarts, and rejoins the lobby. The peer update is unsigned, so accept it only from a host you trust. macOS and Linux update from GitHub instead. If no update is offered, download the current build and rejoin.</p>
+            <p>Different platforms ship different versions, so an older guest can meet a newer host. Update from the official <a href="#downloads">Downloads</a> section first. On Windows, an older guest that supports the updater can also accept <strong>Update &amp; restart</strong> or <strong>Later</strong> in the lobby; it checks the version, size, and SHA-256, restarts, and rejoins. That host-to-guest update is an optional fallback and is unsigned, so accept it only from a host you trust.</p>
           </details>
         </div>
       </div>
