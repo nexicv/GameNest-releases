@@ -86,7 +86,7 @@
           </details>
           <details>
             <summary>Should we use a join code or a LAN/Tailscale address?</summary>
-            <p>Use a join code when players are not on the same network and you do not want port forwarding or Tailscale. Tick <strong>Host through relay</strong> before hosting, then share the six-character code. Players do not see each other's IP addresses when they join this way, but the relay still receives their connections, and the extra hop through Milan adds latency. Use LAN or Tailscale when everyone is on one network or tailnet, and join with the host's address and port 47631. Joining by IP still works while relay hosting is on. Some games might need Tailscale or a local LAN to work effectively; joining by code is viable but less preferred.</p>
+            <p>Use a join code when players are not on the same network and you do not want port forwarding or Tailscale. Tick <strong>Host through relay</strong> before hosting, then share the six-character code. In a relay lobby, and in the board games it carries, players do not see each other's IP addresses; the relay receives their connections instead, and the extra hop through Milan adds latency. Realtime 3D matches are the exception: they connect directly, so your app receives the host's LAN or Tailscale address even when you joined by code. Use LAN or Tailscale when everyone is on one network or tailnet, and join with the host's address and port 47631. Joining by IP still works while relay hosting is on. Some games might need Tailscale or a local LAN to work effectively; joining by code is viable but less preferred.</p>
           </details>
           <details>
             <summary>What does a guest need installed?</summary>
