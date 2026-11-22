@@ -21,7 +21,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/gamenest-gn.svg" type="image/svg+xml">
   <link rel="preload" href="assets/ChakraPetch-Bold.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="site.css?v=title-first">
+  <link rel="stylesheet" href="site.css?v=resources">
   <script>
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
       document.documentElement.classList.add("booting", "boot-letter-build");
@@ -30,7 +30,7 @@
       }
     }
   </script>
-  <script src="site.js?v=title-pause" defer></script>
+  <script src="site.js?v=resources" defer></script>
 </head>
 <body>
   <a class="skip" href="#games">Skip to games</a>
@@ -53,8 +53,14 @@
       <nav class="primary-nav" aria-label="Main navigation">
         <a href="#top"><span>Home</span></a>
         <a href="#games"><span>Games</span></a>
-        <a href="#info"><span>How to play</span></a>
-        <a href="#updates"><span>Updates</span></a>
+        <details class="nav-resources">
+          <summary><span>Resources</span></summary>
+          <div class="resource-links">
+            <a href="#info"><span>How to play</span></a>
+            <a href="#faq"><span>FAQ</span></a>
+            <a href="#updates"><span>Updates</span></a>
+          </div>
+        </details>
       </nav>
       <div class="bar-actions">
         <a class="nav-discord" href="https://discord.gg/EXssq55utK" aria-label="Join the GameNest Discord">
@@ -146,7 +152,7 @@
       </div>
     </section>
 
-    <section class="chapter play" id="info" aria-labelledby="play-title">
+    <section class="chapter play" id="info" aria-labelledby="play-title" tabindex="-1">
       <div class="frame play-layout">
         <div>
           <header class="section-head">
@@ -196,7 +202,7 @@
     </section>
 
     <!-- FAQ added by (DeepSeek v4.1 Flash Max 1017), 2026-11-21 Europe/Warsaw. -->
-    <section class="chapter faq" id="faq" aria-labelledby="faq-title">
+    <section class="chapter faq" id="faq" aria-labelledby="faq-title" tabindex="-1">
       <div class="frame faq-layout">
         <div>
           <header class="section-head">
@@ -251,7 +257,7 @@
       </div>
     </section>
 
-    <section class="chapter" id="updates" aria-labelledby="updates-title">
+    <section class="chapter" id="updates" aria-labelledby="updates-title" tabindex="-1">
       <div class="frame release-layout">
         <header class="section-head">
           <h2 id="updates-title">What’s new</h2>

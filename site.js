@@ -260,6 +260,26 @@ const reveal = new IntersectionObserver((entries) => {
 document.querySelectorAll(".chapter .section-head, .game, .steps li, .play-card, .releases article, .platforms li").forEach((element) => reveal.observe(element));
 
 const header = document.querySelector(".masthead");
+const resources = header.querySelector(".nav-resources");
+const resourcesToggle = resources.querySelector("summary");
+document.addEventListener("click", (event) => {
+  if (!resources.open) return;
+  if (!resources.contains(event.target)) resources.open = false;
+});
+document.addEventListener("focusin", (event) => {
+  if (!resources.contains(event.target)) resources.open = false;
+});
+resources.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape" || !resources.open) return;
+  resources.open = false;
+  resourcesToggle.focus();
+});
+resources.querySelector(".resource-links").addEventListener("click", (event) => {
+  const link = event.target.closest("a");
+  if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  resources.open = false;
+  requestAnimationFrame(() => document.querySelector(link.hash).focus({ preventScroll: true }));
+});
 const sections = [...header.querySelectorAll(".primary-nav a, .nav-download")].map((link) => ({
   link,
   section: document.querySelector(link.hash),
