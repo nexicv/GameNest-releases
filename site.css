@@ -98,8 +98,8 @@ img { display: block; max-width: 100%; height: auto; }
   color: var(--deep);
   background: #f6f8fc;
 }
-.primary-nav :is(a, summary):hover, .nav-discord:hover, .motion-toggle:hover { color: var(--text); background: var(--raised); }
-.nav-discord, .bar .motion-toggle {
+.primary-nav :is(a, summary):hover, .nav-github:hover, .nav-discord:hover, .motion-toggle:hover { color: var(--text); background: var(--raised); }
+.nav-github, .nav-discord, .bar .motion-toggle {
   display: grid;
   min-width: 58px;
   place-items: center;
@@ -385,6 +385,7 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
 
 .boot-defs { position: absolute; pointer-events: none; }
 #boot, .boot-word { display: none; }
+.booting, .booting body { background: var(--deep); }
 .booting #boot { position: fixed; z-index: 10; inset: 0; display: grid; place-items: center; }
 .booting.boot-away #boot {
   background: var(--deep);
@@ -436,7 +437,7 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
   .nav-resources { border-left: 0; }
   .resource-links { inset-inline: auto 0; }
   .bar-actions { grid-area: 1 / 3; }
-  .nav-discord, .bar .motion-toggle { min-width: 44px; }
+  .nav-github, .nav-discord, .bar .motion-toggle { min-width: 44px; }
   .nav-download { min-width: 102px; }
   .hero { padding-block: 64px; }
   .field-tile { opacity: .35; }
@@ -454,6 +455,7 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
   .platforms li div span { font-size: .72rem; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .booting, .booting body { background: var(--base); }
   .booting #boot, .motion-toggle { display: none; }
   .booting :is(.masthead, .hero-details, .hero-field) { opacity: 1; }
   .booting :is(.masthead, .hero-details) { translate: none; }
