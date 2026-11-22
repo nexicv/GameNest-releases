@@ -63,12 +63,20 @@
           </details>
           <details>
             <summary>How do I install and open it?</summary>
-            <p>On Windows, extract the ZIP and open <strong>GameNest.exe</strong>; the packaged build needs no Rust or Python. On Linux, extract the tarball and run <strong>./GameNest</strong>. On macOS, unzip and open <strong>GameNest.app</strong>, then allow it once in <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>. On Android, install the APK.</p>
+            <p>On Windows, extract the ZIP and open <strong>GameNest.exe</strong>; the packaged build needs no Rust or Python. On Linux, extract the tarball and run <strong>./GameNest</strong> (requires <strong>glibc 2.35 or newer</strong>, such as Ubuntu 22.04+, Debian 12+, or Fedora 36+, and an X11 or Wayland desktop). On macOS, unzip and open <strong>GameNest.app</strong>, then allow it once in <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>. On Android, install the APK and allow <strong>Install unknown apps</strong> when prompted. On iPhone, sign the unsigned IPA with your own Apple ID using AltStore or SideStore (free Apple ID signatures refresh every 7 days, and iOS builds do not self-update).</p>
           </details>
           <details>
             <summary>How do I add or update games?</summary>
-            <p>Open <strong>Settings → Manage games</strong> to install, update, or remove a game. In the current Linux (0.11.6) and macOS (0.11.0) releases that catalog does not load, so install the platform's game packs ZIP from <a href="index.html#downloads">Downloads</a> instead, beside the GameNest program on Linux or in <code>~/Library/Application Support/GameNest</code> on macOS. <strong>Incompatible</strong> means the game needs a newer GameNest, so update the app first. GameNest will not install or replace a game while you are hosting or in a match, and it keeps the last two backups. The Android app includes eleven games, so a phone host needs no packs for those. If Manage games cannot load the catalog on Windows, the game packs ZIP on the download page can be extracted into the app folder; installing offline needs a copy you downloaded earlier.</p>
+            <p>Open <strong>Settings → Manage games</strong> to install, update, or remove a game, or open the <strong>Add-ons</strong> list on desktop to install optional extras such as the <strong>Stockfish 19</strong> engine for Chess (Chess works without it, and Android omits Stockfish). In the current Linux (0.11.6) and macOS (0.11.0) releases that catalog does not load, so install the platform's game packs ZIP from <a href="index.html#downloads">Downloads</a> instead, beside the GameNest program on Linux or in <code>~/Library/Application Support/GameNest</code> on macOS. <strong>Incompatible</strong> means the game needs a newer GameNest, so update the app first. GameNest will not install or replace a game while you are hosting or in a match, and it keeps the last two backups. The Android app includes eleven games, so a phone host needs no packs for those. If Manage games cannot load the catalog on Windows, the game packs ZIP on the download page can be extracted into the app folder; installing offline needs a copy you downloaded earlier.</p>
             <a class="text-link" href="index.html#downloads">Downloads and game packs</a>
+          </details>
+          <details>
+            <summary>Can I edit Jeopardy clues or Task Knockout tasks?</summary>
+            <p>Yes. Open <strong>Settings → Manage games → Tools → Edit games…</strong> to edit a game's declared clue or task files directly inside GameNest. The editor checks JSON before saving and keeps a backup of the previous file.</p>
+          </details>
+          <details>
+            <summary>How do I uninstall GameNest?</summary>
+            <p>On desktop, open <strong>Settings</strong> and choose <strong>Uninstall GameNest</strong>. After confirmation, GameNest closes and removes the launcher, portable settings, caches, update files, and installed game packages from the app folder.</p>
           </details>
           <details>
             <summary>What happens if our versions differ?</summary>
@@ -90,7 +98,7 @@
           </details>
           <details>
             <summary>What does a guest need installed?</summary>
-            <p>Usually only GameNest. Most guests do not need game packs, source code, or a compiler. The host installs the games from <strong>Settings → Manage games</strong>, runs the rules, and sends each player their screen. Some games might need installing.</p>
+            <p>For board and party games, only GameNest—guests do not need game packs, source code, or a compiler. The host installs the games from <strong>Settings → Manage games</strong>, runs the rules, and sends each player their screen. Realtime 3D games such as <strong>Practice Range</strong> run on every player's PC, so guests without the package see an <strong>Install</strong> button with the download size on Ready; realtime 3D packages are signed and verified at install and before each launch.</p>
           </details>
         </div>
       </section>
