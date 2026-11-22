@@ -250,7 +250,7 @@ img { display: block; max-width: 100%; height: auto; }
 .more-games strong, .steps strong, .download-notes strong, .faq-list strong { color: var(--text); font-weight: 600; }
 
 .play { background: var(--deep); }
-.play-layout, .release-layout, .download-layout, .faq-layout { display: grid; gap: clamp(32px, 6vw, 96px); }
+.play-layout, .release-layout, .download-layout { display: grid; gap: clamp(32px, 6vw, 96px); }
 .play-layout { grid-template-columns: minmax(0, .85fr) minmax(0, 1.3fr); align-items: center; }
 .play-reference { min-width: 0; display: grid; gap: 16px; }
 .lobby-figure { margin: 0; border: 1px solid var(--line); background: var(--surface); }
@@ -303,7 +303,7 @@ img { display: block; max-width: 100%; height: auto; }
 .play-card dl > div + div { border-top: 1px solid var(--line); }
 .play-card dt { font-weight: 650; }
 
-.release-layout, .download-layout, .faq-layout { grid-template-columns: minmax(0, .85fr) minmax(0, 1.3fr); align-items: start; }
+.release-layout, .download-layout { grid-template-columns: minmax(0, .85fr) minmax(0, 1.3fr); align-items: start; }
 .releases { border-top: 1px solid var(--line); }
 .releases article { padding: 20px 0 24px; border-bottom: 1px solid var(--line); }
 .release-meta { display: flex; gap: 16px; color: var(--muted); font: .875rem/1.4 var(--mono); }
@@ -343,9 +343,38 @@ details { border-bottom: 1px solid var(--line); }
 summary { padding: 16px 0; cursor: pointer; }
 details p { color: var(--secondary); margin-bottom: 12px; }
 details .text-link { display: inline-block; margin-bottom: 16px; }
-.faq-links { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 20px; }
 .faq-list { border-top: 1px solid var(--line); }
 .faq-list summary { font-weight: 650; }
+.resource-page { min-height: 100vh; display: flex; flex-direction: column; }
+.resource-page main { flex: 1; }
+.resource-intro {
+  padding-block: clamp(48px, 7vw, 100px) clamp(36px, 5vw, 72px);
+  background: linear-gradient(120deg, var(--surface), var(--base) 75%);
+  border-bottom: 1px solid var(--line);
+}
+.resource-intro h1 {
+  max-width: 18ch;
+  padding-inline-start: .24em;
+  border-inline-start: 3px solid var(--accent);
+  font-size: clamp(2.65rem, 6.6vw, 5.5rem);
+  overflow-wrap: break-word;
+}
+.resource-intro p { max-width: 52ch; margin-top: 20px; color: var(--secondary); font-size: 1.125rem; }
+.resource-actions { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 20px; }
+.resource-content { padding-block: clamp(32px, 5vw, 64px) clamp(56px, 8vw, 108px); }
+.resource-content h2 { font-size: clamp(1.55rem, 3vw, 2.35rem); margin-bottom: 18px; }
+.resource-content.play-layout { align-items: start; }
+.resource-faq { display: grid; gap: 32px; max-width: 900px; margin-inline: auto; }
+.faq-topic { min-width: 0; }
+.faq-topic .faq-list { padding-inline: clamp(14px, 3vw, 24px); border: 1px solid var(--line); background: var(--surface); }
+.faq-topic details:last-child { border-bottom: 0; }
+.resource-updates { max-width: 900px; }
+.resource-updates .releases { border-top: 0; }
+.resource-updates .release-visual { max-width: 640px; }
+.resource-teaser-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; }
+.resource-teaser-grid article { padding: clamp(20px, 3vw, 36px); border: 1px solid var(--line); background: var(--surface); }
+.resource-teaser-grid h2 { font-size: clamp(1.75rem, 3.5vw, 3rem); }
+.resource-teaser-grid p { margin: 10px 0 16px; color: var(--secondary); }
 .footer-inner { min-height: 88px; }
 .site-footer { background: var(--deep); }
 .footer-community { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
@@ -384,7 +413,7 @@ details .text-link { display: inline-block; margin-bottom: 16px; }
 
 @media (max-width: 900px) {
   .frame { width: calc(100% - 48px); }
-  .play-layout, .release-layout, .download-layout, .faq-layout { grid-template-columns: 1fr; }
+  .play-layout, .release-layout, .download-layout { grid-template-columns: 1fr; }
   .game-copy { padding: 16px; }
   .field-left { left: -32px; }
   .field-right { right: -32px; }

@@ -36,6 +36,7 @@ if (root.classList.contains("booting")) {
     cancelAnimationFrame(queuedFrame);
     listeners.abort();
     syncBackgroundMotion();
+    schedulePositionUpdate();
   }
 
   function trackViewport() {
@@ -260,30 +261,10 @@ const reveal = new IntersectionObserver((entries) => {
 document.querySelectorAll(".chapter .section-head, .game, .steps li, .play-card, .releases article, .platforms li").forEach((element) => reveal.observe(element));
 
 const header = document.querySelector(".masthead");
-const resources = header.querySelector(".nav-resources");
-const resourcesToggle = resources.querySelector("summary");
-document.addEventListener("click", (event) => {
-  if (!resources.open) return;
-  if (!resources.contains(event.target)) resources.open = false;
-});
-document.addEventListener("focusin", (event) => {
-  if (!resources.contains(event.target)) resources.open = false;
-});
-resources.addEventListener("keydown", (event) => {
-  if (event.key !== "Escape" || !resources.open) return;
-  resources.open = false;
-  resourcesToggle.focus();
-});
-resources.querySelector(".resource-links").addEventListener("click", (event) => {
-  const link = event.target.closest("a");
-  if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-  resources.open = false;
-  requestAnimationFrame(() => document.querySelector(link.hash).focus({ preventScroll: true }));
-});
 const sections = [...header.querySelectorAll(".primary-nav a, .nav-download")].map((link) => ({
   link,
-  section: document.querySelector(link.hash),
-}));
+  section: document.getElementById(link.dataset.section || link.hash.slice(1)),
+})).filter(({ section }) => section);
 let activeLink;
 let pendingFrame;
 
@@ -294,9 +275,11 @@ function updatePosition() {
   const progress = scrollable > 0 ? Math.min(1, Math.max(0, scrollY / scrollable)) : 0;
   header.style.setProperty("--progress", progress);
   const cutoff = header.getBoundingClientRect().bottom + 32;
-  const active = progress >= .998
+  const nearest = progress >= .998
     ? sections.at(-1)
     : sections.findLast(({ section }) => section.getBoundingClientRect().top <= cutoff);
+  const requested = sections.find(({ section }) => section.id === location.hash.slice(1));
+  const active = requested && nearest && requested.section.offsetTop === nearest.section.offsetTop ? requested : nearest;
 
   if (activeLink !== active?.link) {
     activeLink?.removeAttribute("aria-current");
@@ -311,77 +294,6 @@ function schedulePositionUpdate() {
 
 window.addEventListener("scroll", schedulePositionUpdate, { passive: true });
 window.addEventListener("resize", schedulePositionUpdate);
+window.addEventListener("hashchange", schedulePositionUpdate);
 window.addEventListener("load", schedulePositionUpdate, { once: true });
 updatePosition();
-
-const previewDialog = document.querySelector(".game-preview");
-const previewImage = previewDialog.querySelector("img");
-const previewTitle = previewDialog.querySelector("h2");
-const compactPreview = matchMedia("(max-width: 640px), (pointer: coarse)");
-let previewCover;
-
-function clearPreviewMotion() {
-  previewImage.getAnimations().forEach((animation) => animation.cancel());
-  previewCover?.remove();
-  previewCover = undefined;
-}
-
-for (const link of document.querySelectorAll(".game-shot, .lobby-image")) {
-  link.addEventListener("click", (event) => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    clearPreviewMotion();
-    const image = link.querySelector("img");
-    const origin = link.dataset.previewSize && !motion.matches && !compactPreview.matches
-      ? image.getBoundingClientRect()
-      : null;
-    const size = link.dataset.previewSize?.split(" ") || [image.getAttribute("width"), image.getAttribute("height")];
-    const [width, height] = size.map(Number);
-    previewImage.width = width;
-    previewImage.height = height;
-    previewDialog.style.width = `min(${width}px, calc(max(1px, 100dvh - 104px) * ${width / height}))`;
-    previewImage.src = link.href;
-    previewImage.alt = image.dataset.previewAlt || image.alt;
-    previewTitle.textContent = link.dataset.previewTitle || link.closest(".game").querySelector("h3").textContent;
-    link.focus({ preventScroll: true });
-    previewDialog.showModal();
-
-    if (!link.dataset.previewSize || motion.matches) return;
-    const timing = { duration: origin ? 220 : 140, easing: "cubic-bezier(.2, .75, .25, 1)" };
-    const reveal = origin
-      ? [{ opacity: 0 }, { opacity: 0.15, offset: 0.42 }, { opacity: 1 }]
-      : [{ opacity: 0.5 }, { opacity: 1 }];
-    previewImage.animate(reveal, { ...timing, easing: "ease-out" });
-    if (!origin) return;
-
-    const target = previewImage.getBoundingClientRect();
-    const x = target.left + (target.width - origin.width) / 2 - origin.left;
-    const y = target.top + (target.height - origin.height) / 2 - origin.top;
-    const cover = new Image();
-    cover.className = "preview-cover";
-    cover.alt = "";
-    cover.src = image.currentSrc || image.src;
-    cover.style.left = `${origin.left}px`;
-    cover.style.top = `${origin.top}px`;
-    cover.style.width = `${origin.width}px`;
-    previewDialog.append(cover);
-    previewCover = cover;
-    cover.animate([
-      { transform: "none", opacity: 1 },
-      { opacity: 0.9, offset: 0.44 },
-      { transform: `translate(${x}px, ${y}px) scale(1.06)`, opacity: 0 },
-    ], timing).onfinish = () => {
-      cover.remove();
-      if (previewCover === cover) previewCover = undefined;
-    };
-  });
-}
-previewDialog.addEventListener("close", () => {
-  if (!previewDialog.open) clearPreviewMotion();
-});
-motion.addEventListener("change", () => {
-  if (motion.matches) clearPreviewMotion();
-});
-previewDialog.addEventListener("click", (event) => {
-  if (event.target === previewDialog) previewDialog.close();
-});
