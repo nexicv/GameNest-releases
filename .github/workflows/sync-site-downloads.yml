@@ -1,0 +1,107 @@
+# Keeps the gamenest.info download links on the newest release for each
+# platform. Runs when a release is published or edited, every 3 hours as a
+# fallback, and on demand. Only links of the form
+# releases/download/vX/GameNest-vX-<asset> and the version label next to a
+# download button change; everything else on the site is left alone.
+# Added by (Claude Opus 5.5 High) - 2026-11-24 Europe/Warsaw.
+name: Sync site downloads
+
+on:
+  release:
+    types: [published, released, edited, deleted]
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+      - name: Point download links at the newest releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import glob, json, os, re, urllib.request
+
+          repo = os.environ["REPO"]
+          releases = []
+          for page in range(1, 6):
+              request = urllib.request.Request(
+                  f"https://api.github.com/repos/{repo}/releases?per_page=100&page={page}",
+                  headers={"Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                           "Accept": "application/vnd.github+json"})
+              batch = json.load(urllib.request.urlopen(request))
+              releases += batch
+              if len(batch) < 100:
+                  break
+
+          def semver(tag):
+              match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", tag)
+              return tuple(map(int, match.groups())) if match else None
+
+          # Newest stable app release that carries each asset suffix.
+          newest = {}
+          for release in releases:
+              version = semver(release["tag_name"])
+              if release["draft"] or release["prerelease"] or version is None:
+                  continue
+              prefix = f"GameNest-{release['tag_name']}"
+              for asset in release["assets"]:
+                  name = asset["name"]
+                  if not name.startswith(prefix + "-"):
+                      continue
+                  suffix = name[len(prefix):]
+                  if suffix not in newest or version > newest[suffix][0]:
+                      newest[suffix] = (version, release["tag_name"])
+          print({suffix: tag for suffix, (_, tag) in sorted(newest.items())})
+
+          base = re.escape(f"https://github.com/{repo}/releases/download/")
+          link = re.compile(base + r"(v\d+\.\d+\.\d+)/GameNest-\1(-[A-Za-z0-9_.-]+)")
+          label = re.compile(
+              r'(<span class="version">)v\d+\.\d+\.\d+(</span>\s*<a [^>]*?href="'
+              + base + r'v\d+\.\d+\.\d+/GameNest-v\d+\.\d+\.\d+(-[A-Za-z0-9_.-]+)")')
+
+          def new_link(match):
+              tag = newest.get(match.group(2), (None, match.group(1)))[1]
+              return f"https://github.com/{repo}/releases/download/{tag}/GameNest-{tag}{match.group(2)}"
+
+          def new_label(match):
+              entry = newest.get(match.group(3))
+              return match.group(1) + entry[1] + match.group(2) if entry else match.group(0)
+
+          prose = re.compile(r"current Linux \(\d+\.\d+\.\d+\) and macOS \(\d+\.\d+\.\d+\)")
+
+          changed = []
+          for path in sorted(glob.glob("*.html")):
+              text = open(path, encoding="utf-8").read()
+              updated = label.sub(new_label, text)
+              updated = link.sub(new_link, updated)
+              linux = newest.get("-linux-x86_64.tar.gz")
+              mac = newest.get("-macos-app.zip")
+              if linux and mac:
+                  updated = prose.sub(
+                      f"current Linux ({linux[1][1:]}) and macOS ({mac[1][1:]})", updated)
+              if updated != text:
+                  open(path, "w", encoding="utf-8", newline="").write(updated)
+                  changed.append(path)
+          print("changed:", changed or "nothing")
+          PY
+      - name: Publish changes
+        run: |
+          if git diff --quiet; then echo "Site already current."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Point download links at the newest releases"
+          git push origin HEAD:gh-pages
