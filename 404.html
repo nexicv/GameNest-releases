@@ -7,11 +7,7 @@
   <meta name="robots" content="noindex">
   <title>Page not found | GameNest</title>
   <base href="/">
-  <script>
-    const base = document.querySelector("base");
-    if (location.hostname === "nexicv.github.io") base.href = "/GameNest-releases/";
-    if (location.protocol === "file:") base.href = "./";
-  </script>
+  <script src="base-fix.js"></script>
   <link rel="icon" href="assets/gamenest-gn.svg" type="image/svg+xml">
   <link rel="stylesheet" href="site.css">
 </head>
